@@ -1,14 +1,11 @@
 <template>
   <div>我的</div>
-
 </template>
 
 <script>
 export default {
-  name: 'My',
+  name: "My"
 };
 </script>
 
-<style scoped>
-
-</style>
+<style lang="less" scoped></style>

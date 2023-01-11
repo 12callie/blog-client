@@ -1,14 +1,11 @@
 <template>
   <div>注册页面</div>
-
 </template>
 
 <script>
 export default {
-  name: 'Register',
+  name: "Register"
 };
 </script>
 
-<style scoped>
-
-</style>
+<style lang="less" scoped></style>

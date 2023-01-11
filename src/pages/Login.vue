@@ -1,13 +1,11 @@
 <template>
-<div>登录</div>
+  <div>登录</div>
 </template>
 
 <script>
 export default {
-  name: 'Login.vue',
+  name: "Login.vue"
 };
 </script>
 
-<style scoped>
-
-</style>
+<style lang="less" scoped></style>

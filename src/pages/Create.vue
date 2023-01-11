@@ -1,13 +1,11 @@
 <template>
-<div>创建博客</div>
+  <div>创建博客</div>
 </template>
 
 <script>
 export default {
-  name: 'Create',
+  name: "Create"
 };
 </script>
 
-<style scoped>
-
-</style>
+<style lang="less" scoped></style>
