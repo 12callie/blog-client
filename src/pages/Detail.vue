@@ -1,86 +1,46 @@
 <template>
   <div id="detail">
     <section class="user-info">
-      <img
-        class="avatar"
-        src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_960_720.jpg"
-        alt=""
-      />
-      <h3>前端异步大揭秘</h3>
+      <img class="avatar" :src="user.avatar" :alt="user.username" />
+      <h3>{{ title }}</h3>
       <p>
-        <router-link to="/user">小艺</router-link>
-        <span>发布于3天前</span>
+        <router-link :to="`/user/${user.id}`">{{ user.username }}</router-link>
+        <span>发布于{{ friendlyDate(createdAt) }}</span>
       </p>
     </section>
-    <section class="article">
-      <p>
-        本文以一个简单的文件读写为例，讲解了异步的不同写法，包括普通的callback、ES2016中的Promise和Generator、Node用于解决回调的co模块、ES2017中的async/await。适合初步接触Node.,js以及少量ES6语法
-      </p>
-      <h1>一个范例</h1>
-      <ul>
-        以一个范例做为例，我们要实现的功能如下:
-        <li>读取a.md文件，得到内容</li>
-        <li>把内容转换成HTML字符串</li>
-        <li>把HTML字符串写入b.html</li>
-      </ul>
-      <p>
-        本文以一个简单的文件读写为例，讲解了异步的不同写法，包括普通的callback、ES2016中的Promise和Generator、Node用于解决回调的co模块、ES2017中的async/await。适合初步接触Node.,js以及少量ES6语法
-      </p>
-      <h1>一个范例</h1>
-      <ul>
-        以一个范例做为例，我们要实现的功能如下:
-        <li>读取a.md文件，得到内容</li>
-        <li>把内容转换成HTML字符串</li>
-        <li>把HTML字符串写入b.html</li>
-      </ul>
-      <p>
-        本文以一个简单的文件读写为例，讲解了异步的不同写法，包括普通的callback、ES2016中的Promise和Generator、Node用于解决回调的co模块、ES2017中的async/await。适合初步接触Node.,js以及少量ES6语法
-      </p>
-      <h1>一个范例</h1>
-      <ul>
-        以一个范例做为例，我们要实现的功能如下:
-        <li>读取a.md文件，得到内容</li>
-        <li>把内容转换成HTML字符串</li>
-        <li>把HTML字符串写入b.html</li>
-      </ul>
-
-      <p>
-        本文以一个简单的文件读写为例，讲解了异步的不同写法，包括普通的callback、ES2016中的Promise和Generator、Node用于解决回调的co模块、ES2017中的async/await。适合初步接触Node.,js以及少量ES6语法
-      </p>
-      <h1>一个范例</h1>
-      <ul>
-        以一个范例做为例，我们要实现的功能如下:
-        <li>读取a.md文件，得到内容</li>
-        <li>把内容转换成HTML字符串</li>
-        <li>把HTML字符串写入b.html</li>
-      </ul>
-      <p>
-        本文以一个简单的文件读写为例，讲解了异步的不同写法，包括普通的callback、ES2016中的Promise和Generator、Node用于解决回调的co模块、ES2017中的async/await。适合初步接触Node.,js以及少量ES6语法
-      </p>
-      <h1>一个范例</h1>
-      <ul>
-        以一个范例做为例，我们要实现的功能如下:
-        <li>读取a.md文件，得到内容</li>
-        <li>把内容转换成HTML字符串</li>
-        <li>把HTML字符串写入b.html</li>
-      </ul>
-      <p>
-        本文以一个简单的文件读写为例，讲解了异步的不同写法，包括普通的callback、ES2016中的Promise和Generator、Node用于解决回调的co模块、ES2017中的async/await。适合初步接触Node.,js以及少量ES6语法
-      </p>
-      <h1>一个范例</h1>
-      <ul>
-        以一个范例做为例，我们要实现的功能如下:
-        <li>读取a.md文件，得到内容</li>
-        <li>把内容转换成HTML字符串</li>
-        <li>把HTML字符串写入b.html</li>
-      </ul>
-    </section>
+    <section class="article" v-html="markdown"></section>
   </div>
 </template>
 
 <script>
+import marked from "marked";
+import blog from "@/api/blog";
+
 export default {
-  name: "Detail"
+  name: "Detail",
+  data() {
+    return {
+      title: "",
+      rawContent: "",
+      user: {},
+      createdAt: ""
+    };
+  },
+  computed: {
+    markdown() {
+      return marked(this.rawContent);
+    }
+  },
+  created() {
+    const blogId = this.$route.params.blogId;
+    blog.getDetail({ blogId: blogId }).then(res => {
+      console.log(res);
+      this.title = res.data.title;
+      this.rawContent = res.data.content;
+      this.user = res.data.user;
+      this.createdAt = res.data.createdAt;
+    });
+  }
 };
 </script>
 

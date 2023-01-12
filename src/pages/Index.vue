@@ -15,7 +15,9 @@
           />
           <figcaption>{{ blog.user.username }}</figcaption>
         </figure>
-        <h3>{{ blog.title }} <span>3天前</span></h3>
+        <h3>
+          {{ blog.title }} <span>{{ friendlyDate(blog.createdAt) }}</span>
+        </h3>
         <p>
           {{ blog.description }}
         </p>

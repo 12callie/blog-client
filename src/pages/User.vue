@@ -1,120 +1,85 @@
 <template>
   <div id="user">
     <section class="user-info">
-      <img
-        class="avatar"
-        src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_960_720.jpg"
-        alt=""
-      />
-      <h3>小艺</h3>
+      <img class="avatar" :src="user.avatar" :alt="user.username" />
+      <h3>{{ user.username }}</h3>
     </section>
     <section>
-      <div class="item">
+      <router-link
+        class="item"
+        v-for="blog in blogs"
+        :key="blog.id"
+        :to="`/detail/${blog.id}`"
+      >
         <div class="date">
-          <span class="day">20</span>
-          <span class="month">5月</span>
-          <span class="year">2022</span>
+          <span class="day">{{ splitDate(blog.createdAt).date }}</span>
+          <span class="month">{{ splitDate(blog.createdAt).month }}月</span>
+          <span class="year">{{ splitDate(blog.createdAt).year }}</span>
         </div>
-        <h3>前端异步大揭秘</h3>
+        <h3>{{ blog.title }}</h3>
         <p>
-          本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的
-          callback、ES2016中的Promise和Generator、 Node 用于解决回调的co
-          模块、ES2017中的async/await。适合初步接触 Node.js以及少量
-          ES6语法的同学阅读...
+          {{ blog.description }}
         </p>
-      </div>
-
-      <div class="item">
-        <div class="date">
-          <span class="day">20</span>
-          <span class="month">5月</span>
-          <span class="year">2022</span>
-        </div>
-        <h3>前端异步大揭秘</h3>
-        <p>
-          本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的
-          callback、ES2016中的Promise和Generator、 Node 用于解决回调的co
-          模块、ES2017中的async/await。适合初步接触 Node.js以及少量
-          ES6语法的同学阅读...
-        </p>
-      </div>
-      <div class="item">
-        <div class="date">
-          <span class="day">20</span>
-          <span class="month">5月</span>
-          <span class="year">2022</span>
-        </div>
-        <h3>前端异步大揭秘</h3>
-        <p>
-          本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的
-          callback、ES2016中的Promise和Generator、 Node 用于解决回调的co
-          模块、ES2017中的async/await。适合初步接触 Node.js以及少量
-          ES6语法的同学阅读...
-        </p>
-      </div>
-      <div class="item">
-        <div class="date">
-          <span class="day">20</span>
-          <span class="month">5月</span>
-          <span class="year">2022</span>
-        </div>
-        <h3>前端异步大揭秘</h3>
-        <p>
-          本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的
-          callback、ES2016中的Promise和Generator、 Node 用于解决回调的co
-          模块、ES2017中的async/await。适合初步接触 Node.js以及少量
-          ES6语法的同学阅读...
-        </p>
-      </div>
-      <div class="item">
-        <div class="date">
-          <span class="day">20</span>
-          <span class="month">5月</span>
-          <span class="year">2022</span>
-        </div>
-        <h3>前端异步大揭秘</h3>
-        <p>
-          本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的
-          callback、ES2016中的Promise和Generator、 Node 用于解决回调的co
-          模块、ES2017中的async/await。适合初步接触 Node.js以及少量
-          ES6语法的同学阅读...
-        </p>
-      </div>
-      <div class="item">
-        <div class="date">
-          <span class="day">20</span>
-          <span class="month">5月</span>
-          <span class="year">2022</span>
-        </div>
-        <h3>前端异步大揭秘</h3>
-        <p>
-          本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的
-          callback、ES2016中的Promise和Generator、 Node 用于解决回调的co
-          模块、ES2017中的async/await。适合初步接触 Node.js以及少量
-          ES6语法的同学阅读...
-        </p>
-      </div>
-      <div class="item">
-        <div class="date">
-          <span class="day">20</span>
-          <span class="month">5月</span>
-          <span class="year">2022</span>
-        </div>
-        <h3>前端异步大揭秘</h3>
-        <p>
-          本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的
-          callback、ES2016中的Promise和Generator、 Node 用于解决回调的co
-          模块、ES2017中的async/await。适合初步接触 Node.js以及少量
-          ES6语法的同学阅读...
-        </p>
-      </div>
+      </router-link>
     </section>
+    <div class="block">
+      <el-pagination
+        :page-size="20"
+        layout="prev, pager, next"
+        :total="total"
+        :current-page.sync="page"
+        @current-change="onPageChange"
+      >
+      </el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
+import blog from "@/api/blog";
+
 export default {
-  name: "User"
+  name: "User",
+  data() {
+    return {
+      blogs: [],
+      user: {},
+      page: 1,
+      total: 0
+    };
+  },
+  created() {
+    const userId = this.$route.params.userId;
+    this.page = Number(this.$route.query.page) || 1;
+    blog.getBlogsByUserId(userId, { page: this.page }).then(res => {
+      this.blogs = res.data;
+      this.total = res.total;
+      if (res.data.length > 0) {
+        this.user = res.data[0].user;
+      }
+    });
+  },
+  methods: {
+    splitDate(dataStr) {
+      let dateObj = typeof dataStr === "object" ? dataStr : new Date(dataStr);
+      return {
+        date: dateObj.getDate(),
+        month: dateObj.getMonth() + 1,
+        year: dateObj.getFullYear()
+      };
+    },
+    onPageChange(newPage) {
+      const userId = this.$route.params.userId;
+      blog.getBlogsByUserId(userId, { page: newPage }).then(res => {
+        this.blogs = res.data;
+        this.total = res.total;
+        this.$router.push({
+          path: `/user/${this.user.id}`,
+          query: { page: newPage }
+        });
+      });
+    }
+  }
 };
 </script>
 
